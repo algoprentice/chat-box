@@ -7,6 +7,7 @@ package chatBox;
 
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 import javax.swing.JOptionPane;
 
 /**
@@ -18,6 +19,14 @@ public class Client {
 
     public void start() throws Exception {
         clientSocket = new Socket(ServerInfo.hostName, ServerInfo.port);
+        
+        System.out.println("Enter Your Name: ");
+        Scanner scan = new Scanner(System.in);
+        String clientName = scan.nextLine();
+        
+        PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+        writer.println(clientName);
+        writer.flush();
         
         System.out.println("Client Side; Connection Established");
     }

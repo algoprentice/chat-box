@@ -24,10 +24,12 @@ public class ClientHandlerThread implements Runnable {
     ArrayList toClientStreams;
     Socket clientSocket;
     BufferedReader reader;
+    String clientName;
     
-    ClientHandlerThread(Socket clientSocket, ArrayList toClientStreams) throws IOException {
+    ClientHandlerThread(Socket clientSocket, ArrayList toClientStreams, String clientName) throws IOException {
         this.clientSocket = clientSocket;
         this.toClientStreams = toClientStreams;
+        this.clientName = clientName;
         this.reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
@@ -36,13 +38,14 @@ public class ClientHandlerThread implements Runnable {
         String message;
         try {
             while((message = reader.readLine()) != null) {
-                System.out.println("Meg: " + message);
+                System.out.println(clientName + ": " + message);
+                
                 if(message.equals("exit")) {
                     System.out.println("Exit Message");
                     clientSocket.close();
                     break;
                 }
-                tellEveryone(message);
+                tellEveryone(clientName + ": " + message);
             }
             System.out.println("Client Handler Out");
         } catch (IOException ex) {

@@ -30,7 +30,7 @@ public class AcceptingMessagesThread implements Runnable {
     public void run() {
         String message;
         try {
-            while(!clientSocket.isClosed() && (message = fromServer.readLine()) != null) {
+            while((message = fromServer.readLine()) != null) {
                 System.out.println("From Server: " + message);
             }
         } catch (IOException ex) {
