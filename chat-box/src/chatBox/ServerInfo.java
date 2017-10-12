@@ -10,6 +10,6 @@ package chatBox;
  * @author Swapnil Jain
  */
 public class ServerInfo {
-    static String hostName = "localhost";
-    static int port = 5014;
+    public static String hostName = "localhost";
+    public static int port = 5014;
 }

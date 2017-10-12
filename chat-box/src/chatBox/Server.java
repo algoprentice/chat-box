@@ -20,12 +20,10 @@ import java.util.Iterator;
 public class Server {
 
     ServerSocket serverSocket;
-    ArrayList clientNames, toClientStreams, fromClientStreams;
+    ArrayList toClientStreams;
 
     public void start() throws Exception {
         serverSocket = new ServerSocket(ServerInfo.port);
-        clientNames = new ArrayList();
-        fromClientStreams = new ArrayList();
         toClientStreams = new ArrayList();
         
         System.out.println("Server Running...");
@@ -34,30 +32,15 @@ public class Server {
             Socket clientSocket = serverSocket.accept();
             promptInfo(clientSocket);
             
-            
+            Thread T = new Thread(new ClientHandlerThread(clientSocket, toClientStreams));
+            T.start();
             
             System.out.println("Server Side; Connection Established");
         }
     }
     
-    public void tellEveryone(String message) {
-        Iterator it = toClientStreams.iterator();
-        while(it.hasNext()) {
-            PrintWriter writer = (PrintWriter) it.next();
-            writer.println(message);
-            writer.flush();
-        }
-    }
-    
     public void promptInfo(Socket clientSocket) throws Exception {
         PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-        String clientName = reader.readLine();
-        System.out.println("Server Side; " + clientName);
-
-        clientNames.add(clientName);
-        fromClientStreams.add(reader);
         toClientStreams.add(writer);
     }
 
