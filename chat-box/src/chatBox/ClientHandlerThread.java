@@ -36,8 +36,15 @@ public class ClientHandlerThread implements Runnable {
         String message;
         try {
             while((message = reader.readLine()) != null) {
+                System.out.println("Meg: " + message);
+                if(message.equals("exit")) {
+                    System.out.println("Exit Message");
+                    clientSocket.close();
+                    break;
+                }
                 tellEveryone(message);
             }
+            System.out.println("Client Handler Out");
         } catch (IOException ex) {
            System.out.println("Error in telling everyone or reader.");
         }

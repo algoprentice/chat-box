@@ -36,5 +36,6 @@ public class AcceptingMessagesThread implements Runnable {
         } catch (IOException ex) {
             Logger.getLogger(AcceptingMessagesThread.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("Out Accepting");
     }
 }
