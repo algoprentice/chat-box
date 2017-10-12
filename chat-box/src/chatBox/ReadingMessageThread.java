@@ -34,15 +34,15 @@ public class ReadingMessageThread implements Runnable {
             Scanner scan = new Scanner(System.in);
             while(true) {
                 message = scan.nextLine();
-                
-                if("exit".equals(message)) {
-                    toServer.close();
-                    break;
-                }
-                
+
                 toServer.println(message);
                 toServer.flush();
+                
+                if("exit".equals(message)) {
+                    break;
+                }
             }
+            System.out.println("Out Reading");
         } catch (Exception ex) {
             Logger.getLogger(ReadingMessageThread.class.getName()).log(Level.SEVERE, null, ex);
         }
