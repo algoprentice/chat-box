@@ -45,6 +45,8 @@ public class ReadingMessageThread implements Runnable {
             System.out.println("Out Reading");
         } catch (Exception ex) {
             Logger.getLogger(ReadingMessageThread.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            
         }
     }
 }

@@ -30,17 +30,22 @@ public class Server {
         
         while (true) {
             Socket clientSocket = serverSocket.accept();
-            promptInfo(clientSocket);
             
-            Thread T = new Thread(new ClientHandlerThread(clientSocket, toClientStreams));
+            ClientHandlerThread clientHandlerThread = new ClientHandlerThread(clientSocket, toClientStreams);
+            promptInfo(clientHandlerThread);
+            
+            Thread T = new Thread(clientHandlerThread);
             T.start();
             
             System.out.println("Server Side; Connection Established");
         }
     }
     
-    public void promptInfo(Socket clientSocket) throws Exception {
-        PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+    public void promptInfo(ClientHandlerThread clientHandlerThread) throws Exception {
+        PrintWriter writer = new PrintWriter(clientHandlerThread.clientSocket.getOutputStream());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(clientHandlerThread.clientSocket.getInputStream()));
+        
+        clientHandlerThread.clientName = reader.readLine();
         toClientStreams.add(writer);
     }
 
