@@ -34,6 +34,7 @@ public class Client {
         writer.flush(); //Removing this can create serious consequences...
         
         System.out.println("Connection Established");
+
     }
 
     public static void main(String[] args) throws Exception {

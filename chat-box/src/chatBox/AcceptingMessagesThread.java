@@ -27,9 +27,11 @@ public class AcceptingMessagesThread implements Runnable {
     public void run() {
         String message;
         try {
+
             //Read until fromServer stream terminates.
             while((message = fromServer.readLine()) != null) {
                 System.out.println(message);
+
             }
         } catch (IOException ex) {
             System.out.println("AcceptingMsgsThrd: readline() error.");

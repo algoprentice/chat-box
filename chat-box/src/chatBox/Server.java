@@ -42,6 +42,7 @@ public class Server {
             
             //Starting client handler thread.
             Thread T = new Thread(clientHandlerThread);
+
             T.start();
             
             System.out.println("Server Side: Connection Established with " + "\"" + clientInfo.getClientName() + "\"");

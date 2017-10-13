@@ -33,6 +33,7 @@ public class ClientHandlerThread implements Runnable {
         try {
             //Reading messages from client's input stream and telling other clients.
             while((message = reader.readLine()) != null) {
+
                 //System.out.println(clientName + ": " + message);
                 
                 //If client types exit, he lefts; tell other clients of this, end that client connection.
@@ -41,11 +42,9 @@ public class ClientHandlerThread implements Runnable {
                     tellEveryoneButMe("[" + GiveDate.now() + "] " + clientName + " left.");
                     break;
                 }
-                
+
                 tellEveryoneButMe("[" + GiveDate.now() + "] " + clientName + ": " + message);
             }
-            
-            //System.out.println(GiveDate.now() + "Client Handler Out");
         } catch (IOException ex) {
            System.out.println("Error in telling everyone or reader.");
         } finally {
