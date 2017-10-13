@@ -7,74 +7,67 @@ package chatBox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
- * @author Swapnil Jain
+ * @author Swapnil Jain - Refactored.
  */
 public class ClientHandlerThread implements Runnable {
     
-    ArrayList toClientStreams;
-    Socket clientSocket;
-    BufferedReader reader;
-    String clientName;
-    DateFormat dateFormat;
-    Date date;
+    ArrayList<ClientInfo> connectedClients;
+    ClientInfo clientInfo;
     
-    ClientHandlerThread(Socket clientSocket, ArrayList toClientStreams) throws IOException {
-        this.clientSocket = clientSocket;
-        this.toClientStreams = toClientStreams;
-        this.reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        
-        dateFormat = new SimpleDateFormat("HH:mm:ss");
-	date = new Date();
+    ClientHandlerThread(ClientInfo clientInfo, ArrayList<ClientInfo> connectedClients) throws IOException {
+        this.clientInfo = clientInfo;
+        this.connectedClients = connectedClients;
     }
 
     @Override
     public void run() {
         String message;
+        BufferedReader reader = clientInfo.getReader();
+        String clientName = clientInfo.getClientName();
+        
         try {
+            //Reading messages from client's input stream and telling other clients.
             while((message = reader.readLine()) != null) {
-                System.out.println(this.clientName + "Says: " + message);
+                //System.out.println(clientName + ": " + message);
                 
+                //If client types exit, he lefts; tell other clients of this, end that client connection.
                 if(message.equals("exit")) {
-                    System.out.println("Exit Message");
-                    clientSocket.close();
-                    tellEveryone(this.clientName + " left");
+                    System.out.println(clientName + ": Exit Message.");
+                    tellEveryoneButMe("[" + GiveDate.now() + "] " + clientName + " left.");
                     break;
                 }
                 
-                tellEveryone(this.clientName + "Says: " + message);
+                tellEveryoneButMe("[" + GiveDate.now() + "] " + clientName + ": " + message);
             }
-            System.out.println(dateFormat.format(date) + "Client Handler Out");
+            
+            //System.out.println(GiveDate.now() + "Client Handler Out");
         } catch (IOException ex) {
            System.out.println("Error in telling everyone or reader.");
         } finally {
-            try {
-                if(!clientSocket.isClosed()) this.clientSocket.close();
-                else System.out.println(dateFormat.format(date) + "CHT: Closed Already");
-            } catch (IOException ex) {
-                System.out.println("ClientHandlerThread: Error in closing");
+            //Closing socket and its streams.
+            if(!clientInfo.isClosed()) {
+                clientInfo.close();
+                System.out.println(clientName + "'s connection closed successfully.");
+            }
+            else {
+                System.out.println("ClientHandlerThread: Closed Already");
             }
         }
     }
     
-    public void tellEveryone(String message) {
-        Iterator it = toClientStreams.iterator();
-        while(it.hasNext()) {
-            PrintWriter writer = (PrintWriter) it.next();
-            writer.println(message);
-            writer.flush();
+    //Send message of one client to other clients excluding his self.
+    public void tellEveryoneButMe(String message) {
+        for (ClientInfo iteratorClientInfo : connectedClients) {
+            if(!iteratorClientInfo.getClientName().equals(this.clientInfo.getClientName())) {
+                PrintWriter writer = (PrintWriter) iteratorClientInfo.getWriter();
+                writer.println(message);
+                writer.flush();     //Removing this can create serious consequences.
+            }
         }
     }
     
