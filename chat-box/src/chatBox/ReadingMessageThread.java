@@ -16,17 +16,16 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Swapnil Jain
+ * @author Swapnil Jain - Refactored.
  */
 public class ReadingMessageThread implements Runnable {
     PrintWriter toServer;
-    Socket clientSocket;
     
-    ReadingMessageThread(Socket clientSocket) throws IOException {
-        this.clientSocket = clientSocket;
-        toServer = new PrintWriter(clientSocket.getOutputStream());
+    ReadingMessageThread(ClientInfo clientInfo) throws IOException {
+        toServer = clientInfo.getWriter();
     }
 
+    //Taking user input and sending to the server.
     @Override
     public void run() {
         String message;
@@ -38,13 +37,16 @@ public class ReadingMessageThread implements Runnable {
                 toServer.println(message);
                 toServer.flush();
                 
+                //On "exit", break the loop; clientHandlerThread running on server will close the connection.
                 if("exit".equals(message)) {
                     break;
                 }
             }
-            System.out.println("Out Reading");
+
         } catch (Exception ex) {
             Logger.getLogger(ReadingMessageThread.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            
         }
     }
 }

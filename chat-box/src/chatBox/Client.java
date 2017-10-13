@@ -15,27 +15,33 @@ import javax.swing.JOptionPane;
  * @author Swapnil Jain
  */
 public class Client {
-    Socket clientSocket;
+    ClientInfo clientInfo;
 
     public void start() throws Exception {
-        clientSocket = new Socket(ServerInfo.hostName, ServerInfo.port);
+        Socket clientSocket = new Socket(ServerInfo.hostName, ServerInfo.port);
         
-        System.out.println("Enter Your Name: ");
+        //Prompting Client'Name
         Scanner scan = new Scanner(System.in);
+        System.out.print("Enter your name: ");
         String clientName = scan.nextLine();
         
-        PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-        writer.println(clientName);
-        writer.flush();
+        //Initialing clientInfo.
+        clientInfo = new ClientInfo(clientSocket, clientName);
         
-        System.out.println("Client Side; Connection Established");
+        //Sending client's name to server via output stream.
+        PrintWriter writer = clientInfo.getWriter();
+        writer.println(clientName);
+        writer.flush(); //Removing this can create serious consequences...
+        
+        System.out.println("Connection Established");
+
     }
 
     public static void main(String[] args) throws Exception {
         Client client = new Client();
         client.start();
         
-        new Thread(new AcceptingMessagesThread(client.clientSocket)).start();
-        new Thread(new ReadingMessageThread(client.clientSocket)).start();
+        new Thread(new AcceptingMessagesThread(client.clientInfo)).start();
+        new Thread(new ReadingMessageThread(client.clientInfo)).start();
     }
 }
